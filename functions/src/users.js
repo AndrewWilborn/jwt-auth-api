@@ -15,6 +15,10 @@ export async function signup(req, res) {
 export async function login(req, res) {
   const { email, password} = req.body
   let user = await coll.findOne({ email: email.toLowerCase(), password })
+  if(!user) {
+    res.status(401).send({ message: "Invalid email or password."})
+    return
+  }
   delete user.password // strip out password
   const token = jwt.sign(user, privateKey)
   res.send({ user, token })
