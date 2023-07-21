@@ -27,11 +27,13 @@ export async function login(req, res) {
 }
 
 export async function getProfile(req, res) {
-  if(!req.headers || !req.headers.authorization) {
-    res.status(401).send({ message: "Not Authorized" })
-    return
-  }
-  const decoded = jwt.verify(req.headers.authorization, privateKey)
-  const user = await coll.findOne({ _id: new ObjectId(decoded._id)})
-  res.send({ user })
+  const user = await coll.findOne({ _id: new ObjectId(req.decodedToken._id)})
+  res.status(202).send({ user })
+}
+
+export async function updateProfile(req, res) {
+  await coll.updateOne(
+    { _id: new ObjectId(req.params.uid)},
+    { $set: req.body })
+  res.status(202).send({ message: 'User profile updated', success: true })
 }
